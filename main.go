@@ -35,7 +35,7 @@ func main() {
 		return
 	}
 
-	fmt.Println("JSON data : ", string(jsonData))
+	fmt.Println("Marshal Data : ", string(jsonData))
 
 	var p Person
 	err = json.Unmarshal(jsonData, &p)
@@ -44,7 +44,7 @@ func main() {
 		return
 	}
 
-	fmt.Printf("Unmarshal struct: %+v \n", p)
-	fmt.Println("Name: ", p.Name)
-	fmt.Println("Age: ", p.Age)
+	fmt.Printf("unmarshalled struct : %+v \n", p)
+	fmt.Println("Name", p.Name)
+	fmt.Println("Age", p.Age)
 }
