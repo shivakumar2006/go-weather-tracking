@@ -32,6 +32,7 @@ func main() {
 	jsonData, err := json.Marshal(person)
 	if err != nil {
 		fmt.Println("Error marshalling JSON: ", err)
+		return
 	}
 
 	fmt.Println("JSON data : ", string(jsonData))
@@ -39,11 +40,11 @@ func main() {
 	var p Person
 	err = json.Unmarshal(jsonData, &p)
 	if err != nil {
-		fmt.Println("Error unmarshalling data : ", err)
+		fmt.Println("Error unmarshalling JSON: ", err)
 		return
 	}
 
-	fmt.Printf("Unmarshalled struct, %+v \n", p)
-	fmt.Println("Name", p.Name)
-	fmt.Println("Age", p.Age)
+	fmt.Printf("Unmarshal struct: %+v \n", p)
+	fmt.Println("Name: ", p.Name)
+	fmt.Println("Age: ", p.Age)
 }
