@@ -1,13 +1,5 @@
-// package main
+package main
 
-// import (
-// 	"encoding/json"
-// 	"io/ioutil"
-// 	"net/http"
-// 	"strings"
-// )
+func main() {
 
-// func main() {
-
-// }
-
+}
