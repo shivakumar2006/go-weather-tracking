@@ -17,6 +17,7 @@ const Weather = () => {
         setLoading(true);
         try {
             const response = await axios.get(`http://localhost:8080/weather/${city}`);
+            console.log(response.data)
             setWeatherData(response.data);
             setError('');
         } catch (err) {
@@ -44,11 +45,11 @@ const Weather = () => {
             {weatherData && (
                 <div className='weather-info'>
                     <h2>{weatherData.name}</h2>
-                    <p>Temperature: {}</p>
-                    <p>Humidity: {}</p>
-                    <p>Pressure: {}</p>
-                    <p>Wind Speed: {}</p>
-                    <p>Description: {}</p>
+                    <p>Temperature: {weatherData.main?.temp ? weatherData.main.temp.toFixed(2): 'No data'}°C</p>
+                    <p>Humidity: {weatherData.main?.humidity ?? 'No data'}%</p>
+                    <p>Pressure: {weatherData.main?.pressure ?? 'No data'} hPa</p>
+                    <p>Wind Speed: {weatherData.wind?.speed ?? 'No data'} m/s</p>
+                    <p>Description: {weatherData.weather?.[0]?.description ?? 'No description available'}</p>
                 </div>
             )}
         </div>

@@ -7,6 +7,8 @@ import (
 	"log"
 	"net/http"
 	"strings"
+
+	"github.com/gorilla/handlers"
 )
 
 type apiConfigData struct {
@@ -43,6 +45,7 @@ func loadApiConfig(filename string) (apiConfigData, error) {
 }
 
 func hello(w http.ResponseWriter, r *http.Request) {
+	log.Println("Received request at /hello")
 	w.Write([]byte("hello from go! \n"))
 }
 
@@ -52,15 +55,24 @@ func query(city string) (WeatherData, error) {
 		return WeatherData{}, err
 	}
 
-	resp, err := http.Get("http://api.openweathermap.org/data/2.5/weather?APPID=" + apiConfig.OpenWeatherMapApiKey + "&q=" + city)
+	apiURL := "http://api.openweathermap.org/data/2.5/weather?APPID=" + apiConfig.OpenWeatherMapApiKey + "&q=" + city
+	log.Printf("Fetching weather data for city: %s \n", city)
+
+	resp, err := http.Get(apiURL)
 	if err != nil {
 		return WeatherData{}, err
 	}
 
 	defer resp.Body.Close()
 
+	if resp.StatusCode != http.StatusOK {
+		log.Printf("Received on-200 response form API: %d \n", resp.StatusCode)
+		return WeatherData{}, err
+	}
+
 	var d WeatherData
 	if err := json.NewDecoder(resp.Body).Decode(&d); err != nil {
+		log.Printf("Error decoding API response: %v \n", err)
 		return WeatherData{}, err
 	}
 
@@ -72,10 +84,16 @@ func query(city string) (WeatherData, error) {
 	fmt.Printf("Wind Speed: %.2f m/s\n", d.Wind.Speed)
 	fmt.Printf("Weather Description: %s \n", d.Weather[0].Description)
 
+	log.Printf("Response sent to frontend: %+v\n", d)
+
 	return d, nil
 }
 
 func main() {
+	headers := handlers.AllowedHeaders([]string{"Content-Type"})
+	origins := handlers.AllowedOrigins([]string{"*"})
+	methods := handlers.AllowedMethods([]string{"GET", "POST", "OPTIONS"})
+
 	log.Println("Starting server on port : 8080...")
 	http.HandleFunc("/hello", hello)
 
@@ -94,5 +112,5 @@ func main() {
 			json.NewEncoder(w).Encode(data)
 		})
 
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(":8080", handlers.CORS(origins, headers, methods)(http.DefaultServeMux))
 }
