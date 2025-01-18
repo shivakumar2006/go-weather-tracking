@@ -2,7 +2,9 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"io/ioutil"
+	"log"
 	"net/http"
 	"strings"
 )
@@ -14,8 +16,16 @@ type apiConfigData struct {
 type WeatherData struct {
 	Name string `json:"name"`
 	Main struct {
-		Celcius float64 `json:"temp"`
+		Celcius  float64 `json:"temp"`
+		Humidity float64 `json:"humidity"`
+		Pressure float64 `json:"pressure"`
 	} `json:"main"`
+	Wind struct {
+		Speed float64 `json:"speed"`
+	} `json:"wind"`
+	Weather []struct {
+		Description string `json:"description"`
+	} `json:"weather"`
 }
 
 func loadApiConfig(filename string) (apiConfigData, error) {
@@ -53,10 +63,20 @@ func query(city string) (WeatherData, error) {
 	if err := json.NewDecoder(resp.Body).Decode(&d); err != nil {
 		return WeatherData{}, err
 	}
+
+	d.Main.Celcius = d.Main.Celcius - 273.15
+
+	fmt.Printf("Temperature in Celsius: %.2f°C\n", d.Main.Celcius)
+	fmt.Printf("Humidity: %.2f%%\n", d.Main.Humidity)
+	fmt.Printf("Pressure: %.2f hpa\n", d.Main.Pressure)
+	fmt.Printf("Wind Speed: %.2f m/s\n", d.Wind.Speed)
+	fmt.Printf("Weather Description: %s \n", d.Weather[0].Description)
+
 	return d, nil
 }
 
 func main() {
+	log.Println("Starting server on port : 8080...")
 	http.HandleFunc("/hello", hello)
 
 	http.HandleFunc("/weather/",
@@ -67,7 +87,10 @@ func main() {
 				http.Error(w, err.Error(), http.StatusInternalServerError)
 				return
 			}
-			w.Header().Set("Content-Type", "application/json: charset=utf-8")
+
+			log.Printf("Data being returned: %+v", data)
+
+			w.Header().Set("Content-Type", "application/json; charset=utf-8")
 			json.NewEncoder(w).Encode(data)
 		})
 
