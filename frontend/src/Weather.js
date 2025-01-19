@@ -16,7 +16,7 @@ const Weather = () => {
         }
         setLoading(true);
         try {
-            const response = await axios.get(`http://localhost:8080/weather/${city}`);
+            const response = await axios.get(`https://go-weather-tracking-5.onrender.com/weather/${city}`);
             console.log(response.data)
             setWeatherData(response.data);
             setError('');
