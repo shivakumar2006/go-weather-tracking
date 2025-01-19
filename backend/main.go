@@ -112,5 +112,5 @@ func main() {
 			json.NewEncoder(w).Encode(data)
 		})
 
-	http.ListenAndServe(":8080", handlers.CORS(origins, headers, methods)(http.DefaultServeMux))
+	http.ListenAndServe("https://go-weather-tracking-5.onrender.com", handlers.CORS(origins, headers, methods)(http.DefaultServeMux))
 }
