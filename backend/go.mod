@@ -1,4 +1,4 @@
-module github.com/shivakumar2006/weather
+module go-weather-tracking
 
 go 1.23.4
 
